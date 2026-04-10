@@ -13,8 +13,16 @@ async function runPipeline(file, platform, goal, extra, onStatus) {
   form.append("platform", platform);
   form.append("goal", goal);
   form.append("extra", extra);
-  const res = await fetch(MODAL_API, { method: "POST", body: form });
-  if (!res.ok) throw new Error(`Pipeline error: ${await res.text()}`);
+  let res;
+try {
+  res = await fetch(MODAL_API, { method: "POST", body: form });
+} catch(e) {
+  throw new Error(`Network error: ${e.message} — Modal may still be cold starting, please try again in 30 seconds`);
+}
+if (!res.ok) {
+  const errText = await res.text();
+  throw new Error(`Pipeline error ${res.status}: ${errText}`);
+}
   return await res.json();
 }
 
