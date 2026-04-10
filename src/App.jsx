@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 
-const MODAL_API = "https://siddhantiyer96--neurallens-pipeline-fastapi-app.modal.run";
+const MODAL_API = "https://siddhantiyer96--neurallens-pipeline-fastapi-app.modal.run/";
 const G = "linear-gradient(135deg,#e879f9,#a78bfa,#60a5fa)";
 const gTxt = { background:G, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" };
 const PLATFORMS = ["Instagram","LinkedIn","Twitter / X","TikTok","Facebook","YouTube"];
@@ -191,6 +191,11 @@ export default function NeuralLens() {
   const analyze = async () => {
     if (!activeSlots.length) return;
     setScreen("analyzing"); setError(null);
+
+    setStatusMsg("Warming up GPU — this takes ~60 seconds on first run…");
+    try { await fetch(MODAL_API, { method: "GET" }); } catch(e) {}
+    await new Promise(r => setTimeout(r, 5000));
+
     const out = [];
     for (let i=0;i<activeSlots.length;i++) {
       const idx = activeSlots[i];
